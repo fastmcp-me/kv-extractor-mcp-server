@@ -1,5 +1,7 @@
 # Flexible Key-Value Extracting MCP Server
 
+[![smithery badge](https://smithery.ai/badge/@KunihiroS/kv-extractor-mcp-server)](https://smithery.ai/server/@KunihiroS/kv-extractor-mcp-server)
+
 Version: 0.1.0
 
 This MCP server extracts key-value pairs from arbitrary, noisy, or unstructured text using LLMs (GPT-4.1-mini) and pydantic-ai. 
@@ -242,6 +244,14 @@ addresses = '[{"city": "Tokyo", "zip": "160-0022"}, {"city": "Osaka", "zip": "53
   ```
 
 ## Usage
+
+### Installing via Smithery
+
+To install kv-extractor-mcp-server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/@KunihiroS/kv-extractor-mcp-server):
+
+```bash
+npx -y @smithery/cli install @KunihiroS/kv-extractor-mcp-server --client claude
+```
 
 ### Requirements
 - Python 3.9+

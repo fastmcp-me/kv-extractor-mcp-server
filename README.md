@@ -306,17 +306,3 @@ GPL-3.0-or-later
 
 ## Author
 KunihiroS (and contributors)
-
-## TODO
-
-1. **Implement log control feature**
-    - Support for `--log=on|off` option at server startup
-2. **README/operational documentation update**
-3. **Log file output path specification**
-   - Add a command-line argument `--log [on|off] [absolute PATH]` to specify the log file output path.
-   - Example: `python server.py --log on /var/log/mcp_server.log`
-3. **pipx support**
-   - Make the server callable via `pipx run kv-extractor-mcp-server`.
-4. **PyPI registration**
-   - Register the package on PyPI for easy installation via `pip install kv-extractor-mcp-server
-`.

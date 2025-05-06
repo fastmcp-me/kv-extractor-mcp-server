@@ -108,7 +108,6 @@ agent_eval = Agent('openai:gpt-4.1-mini')
 LANG_MODEL_MAP = {
     'ja': 'ja_core_news_md',
     'en': 'en_core_web_sm',
-    'zh': 'zh_core_web_sm',
     'zh-cn': 'zh_core_web_sm',
     'zh-tw': 'zh_core_web_sm',
 }
@@ -147,9 +146,13 @@ FEW_SHOT_KV_EXTRACTION = {
         {"input": "John and Mike will attend a meeting in Tokyo.", "output": "key: person, value: [John, Mike]\nkey: location, value: Tokyo"},
         {"input": "Tomorrow is April 25th. The weather is clear, with a high of 25°C expected.", "output": "key: date, value: 20250425\nkey: weather, value: clear\nkey: temperature, value: 25"},
     ],
-    'zh': [
+    'zh-cn': [
         {"input": "张三和李四负责准备材料。", "output": "key: person, value: [张三, 李四]\nkey: task, value: 准备材料"},
         {"input": "明天是4月25日。天气晴朗，预计最高气温为25℃。", "output": "key: date, value: 20250425\nkey: weather, value: 晴朗\nkey: temperature, value: 25"},
+    ],
+    'zh-tw': [
+        {"input": "張三和李四負責準備材料。", "output": "key: person, value: [張三, 李四]\nkey: task, value: 準備材料"},
+        {"input": "明天是4月25日。天氣晴朗，預計最高氣溫為25℃。", "output": "key: date, value: 20250425\nkey: weather, value: 晴朗\nkey: temperature, value: 25"},
     ],
 }
 
@@ -212,7 +215,12 @@ You are an AI that extracts key-value information from given text.
 """
 
 def build_kv_extraction_prompt(input_text: str, spacy_phrases: list[str] = None, lang: str = 'en'):
-    language_map = {'ja': 'Japanese', 'en': 'English', 'zh': 'Chinese'}
+    language_map = {
+        'ja': 'Japanese',
+        'en': 'English',
+        'zh-cn': 'Chinese (Simplified)',
+        'zh-tw': 'Chinese (Traditional)',
+    }
     lang_label = language_map.get(lang, 'English')
     prompt = (
         f"## Language context: {lang_label}\n"
@@ -432,21 +440,23 @@ async def normalize_types_v2(kv_data: List[KVOut], agent_for_llm: Agent, lang: s
     Args:
         kv_data (List[KVOut]): List of key-value-type objects from previous steps.
         agent_for_llm (Agent): The Pydantic-AI agent to use for LLM-based normalization.
-        lang (str): Detected language code (e.g., 'ja', 'en', 'zh').
+        lang (str): Detected language code (e.g., 'ja', 'en', 'zh-cn', 'zh-tw').
         
     Returns:
         List[KVOut]: Updated list with normalized values.
     """
     # Language-specific boolean normalization sets
     BOOL_TRUE_VALUES = {
-        'ja': {'はい', '有効', 'あり', '真', '1'},
-        'zh': {'是', '有', '对', '真', '对的', '有的', '1'},
-        'en': {'true', 'yes', '1'},
+        'ja': {'はい', '有効', '真', '1', 'ある'},
+        'en': {'yes', 'true', 'valid', 'enabled', '1'},
+        'zh-cn': {'是', '有', '对', '真', '对的', '有的', '1'},
+        'zh-tw': {'是', '有', '對', '真', '對的', '有的', '1'},
     }
     BOOL_FALSE_VALUES = {
-        'ja': {'いいえ', '無効', 'なし', '偽', '0'},
-        'zh': {'否', '没有', '错', '假', '错误', '不对', '没有的', '0'},
-        'en': {'false', 'no', '0'},
+        'ja': {'いいえ', '無効', '偽', '0', 'ない'},
+        'en': {'no', 'false', 'invalid', 'disabled', '0'},
+        'zh-cn': {'否', '没有', '错', '假', '错误', '不对', '没有的', '0'},
+        'zh-tw': {'否', '沒有', '錯', '假', '錯誤', '不對', '沒有的', '0'},
     }
     def lang_bool_handler(v, __):
         v_norm = v.lower().strip()

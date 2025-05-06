@@ -2,7 +2,9 @@
 
 [![smithery badge](https://smithery.ai/badge/@KunihiroS/kv-extractor-mcp-server)](https://smithery.ai/server/@KunihiroS/kv-extractor-mcp-server)
 
-Version: 0.1.0
+[![smithery badge](https://smithery.ai/badge/@KunihiroS/kv-extractor-mcp-server)](https://smithery.ai/server/@KunihiroS/kv-extractor-mcp-server)
+
+Version: 0.2.0
 
 This MCP server extracts key-value pairs from arbitrary, noisy, or unstructured text using LLMs (GPT-4.1-mini) and pydantic-ai. 
 It ensures type safety and supports multiple output formats (JSON, YAML, TOML). The server is robust to any input and always attempts to structure data as much as possible, however, perfect extraction is **not guaranteed**.
@@ -10,6 +12,9 @@ It ensures type safety and supports multiple output formats (JSON, YAML, TOML). 
 ---
 
 ## Release Notes
+
+### v0.2.0
+- Fix: Lang code for zh-cn / zh-tw.
 
 ### v0.1.0
 - Initial release
@@ -22,7 +27,7 @@ It ensures type safety and supports multiple output formats (JSON, YAML, TOML). 
     - *Note: Due to TOML specifications, arrays of objects (dicts) or deeply nested structures cannot be directly represented. See "Note on TOML Output Limitations" below for details.*
 
 **Note:**
-- Supported languages: Japanese, English, and Chinese (Simplified/Traditional).
+- Supported languages: Japanese, English, and Chinese (Simplified: zh-cn / Traditional: zh-tw).
 - Extraction relies on pydantic-ai and LLMs. Perfect extraction is not guaranteed.
 - Longer input sentences will take more time to process. Please be patient.
 - On first launch, the server will download spaCy models, so the process will take longer initially.
@@ -37,7 +42,7 @@ It ensures type safety and supports multiple output formats (JSON, YAML, TOML). 
 
 ## Features
 - **Flexible extraction**: Handles any input, including noisy or broken data.
-- **JP / EN / ZH full support**: Preprocessing with spaCy NER by automatic language detection (Japanese, English, Chinese [Simplified/Traditional] supported; others are rejected with error).
+- **JP / EN / ZH-CN / ZH-TW full support**: Preprocessing with spaCy NER by automatic language detection (Japanese, English, Chinese [Simplified: zh-cn / Traditional: zh-tw] supported; others are rejected with error).
 - **Type-safe output**: Uses Pydantic for output validation.
 - **Multiple formats**: Returns results as JSON, YAML, or TOML.
 - **Robust error handling**: Always returns a well-formed response, even on failure.

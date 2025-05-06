@@ -2,8 +2,6 @@
 
 [![smithery badge](https://smithery.ai/badge/@KunihiroS/kv-extractor-mcp-server)](https://smithery.ai/server/@KunihiroS/kv-extractor-mcp-server)
 
-[![smithery badge](https://smithery.ai/badge/@KunihiroS/kv-extractor-mcp-server)](https://smithery.ai/server/@KunihiroS/kv-extractor-mcp-server)
-
 Version: 0.2.0
 
 This MCP server extracts key-value pairs from arbitrary, noisy, or unstructured text using LLMs (GPT-4.1-mini) and pydantic-ai. 

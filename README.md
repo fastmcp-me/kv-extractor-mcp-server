@@ -2,17 +2,30 @@
 
 [![smithery badge](https://smithery.ai/badge/@KunihiroS/kv-extractor-mcp-server)](https://smithery.ai/server/@KunihiroS/kv-extractor-mcp-server)
 
-Version: 0.3.0
+Version: 0.3.1
 
 This MCP server extracts key-value pairs from arbitrary, noisy, or unstructured text using LLMs (GPT-4.1-mini) and pydantic-ai. 
 It ensures type safety and supports multiple output formats (JSON, YAML, TOML). The server is robust to any input and always attempts to structure data as much as possible, however, perfect extraction is **not guaranteed**.
 
 ---
+## 🤔💡 Why Use This MCP Server?
+
+While many Large Language Model (LLMs) services offer structured output capabilities, this MCP server provides distinct advantages for key-value extraction, especially from challenging real-world text:
+
+*   🔑🔍 **Automatic Key Discovery**: A core strength is its ability to *autonomously identify and extract relevant key-value pairs* from unstructured text *without requiring pre-defined keys*. While typical LLM structured outputs need you to specify the keys you're looking for, this server discovers them, making it highly effective for diverse and unpredictable data where the structure is not known beforehand.
+*   💪🧱 **Superior Robustness for Complex Inputs**: It excels with arbitrary, noisy, or unstructured text where standard LLM structured outputs might falter. The multi-step pipeline is specifically designed to sift through and make sense of imperfect data.
+*   🌐🗣️ **Advanced Multi-Lingual Preprocessing**: Before LLM processing, it leverages spaCy for Named Entity Recognition (NER) in Japanese, English, and Chinese (Simplified/Traditional), significantly enhancing extraction accuracy for these languages by providing context-rich candidate phrases.
+*   🔄✍️ **Iterative Refinement and Typing**: Unlike a single-pass extraction, this server employs a sophisticated pipeline including LLM-based type annotation, LLM-based type evaluation, and rule-based/LLM-fallback normalization. This ensures more accurate and contextually appropriate data types.
+*   ✅🛡️ **Guaranteed Type Safety and Schema Adherence**: Final structuring with Pydantic ensures that the output is not only structured but also type-safe and validated against a defined schema, providing reliable data for downstream applications.
+*   📊⚙️ **Consistent and Predictable Output**: The server is designed to always return a well-formed response, even if extraction is partial or encounters issues, which is critical for building robust automated systems.
+
+---
 
 ## Release Notes
 
-### v0.3.0
+### v0.3.1
 - Update: Improve type evaluation prompt for robust correction.
+- Update: Added the strong point of this MCP server on README.md
 
 ### v0.2.0
 - Fix: Lang code for zh-cn / zh-tw.

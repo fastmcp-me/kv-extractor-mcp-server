@@ -606,21 +606,21 @@ async def extract_kv_pipeline(input_text: str, output_format: str) -> Dict[str, 
     try:
         logging.debug(f"Starting extract_kv_pipeline with input_text: {input_text[:100]}... (truncated)")
         lang = detect(input_text)
-        # Step 0: spaCyによる前処理（固有表現抽出）
+        # Step 0: Preprocessing with spaCy (Named Entity Recognition)
         spacy_phrases = extract_phrases_with_spacy_multilang(input_text)
-        # Step 1: LLMでKV抽出（前処理情報も渡す）
+        # Step 1: Extract key-value pairs with LLM (pass preprocessing info as well)
         kv_prompt = build_kv_extraction_prompt(input_text, spacy_phrases, lang)
         logging.debug(f"KV extraction prompt: {kv_prompt[:200]}... (truncated)")
         kv_lines = await agent_main.run(kv_prompt)
         logging.debug(f"KV extraction result: {kv_lines.data[:200]}... (truncated)")
 
-        # Step 2: 型アノテーションもLLMに渡す（そのまま投げる）
+        # Step 2: Pass type annotation to LLM (as is)
         type_prompt = build_type_annotation_prompt(kv_lines.data)
         logging.debug(f"Type annotation prompt: {type_prompt[:200]}... (truncated)")
         typed_lines = await agent_main.run(type_prompt)
         logging.debug(f"Type annotation result: {typed_lines.data[:200]}... (truncated)")
 
-        # Step 3: 型アノテーション評価に特化
+        # Step 3: Specialized evaluation for type annotation
         eval_prompt = build_evaluation_prompt(typed_lines.data)
         logging.debug(f"Evaluation prompt: {eval_prompt[:200]}... (truncated)")
         eval_result = await agent_eval.run(eval_prompt)
@@ -643,7 +643,7 @@ async def extract_kv_pipeline(input_text: str, output_format: str) -> Dict[str, 
                 typed_lines_for_parse = str(typed_lines)
         logging.debug(f"Parsed lines for final step: {typed_lines_for_parse[:200]}... (truncated)")
 
-        # Step 4: 整形・型検証はpydantic-aiに「まるごと」渡す
+        # Step 4: Formatting and type validation are fully delegated to pydantic-ai
         result = await agent_eval.run(
             f"Summarize the following key-value-type lines as a structured object with 'kvs' list. "
             f"Each kvs item should have key, value, and type. "
@@ -651,11 +651,11 @@ async def extract_kv_pipeline(input_text: str, output_format: str) -> Dict[str, 
             output_type=KVPayload
         )
 
-        # AgentRunResultからKVPayloadを取り出す
+        # Extract KVPayload from AgentRunResult
         if hasattr(result, "output") and isinstance(result.output, KVPayload):
             result = result.output
         elif isinstance(result, KVPayload):
-            pass # 既に正しい型
+            pass # Already correct type
         else:
             return {
                 "success": False,
@@ -663,7 +663,7 @@ async def extract_kv_pipeline(input_text: str, output_format: str) -> Dict[str, 
                 "debug": {"result_repr": repr(result)}
             }
 
-        # デバッグ情報を返却値に含める
+        # Add debug info to return value
         debug_info = {
             "type": str(type(result)),
             "dir": str(dir(result)),
@@ -677,7 +677,7 @@ async def extract_kv_pipeline(input_text: str, output_format: str) -> Dict[str, 
             debug_info["kv_data_repr"] = repr(kv_data)
 
             try:
-                # Step 4 (New): 型正規化処理 (V2)
+                # Step 4 (New): Type normalization process (V2)
                 # Pass agent_eval for LLM fallback
                 normalized_kv_data = await normalize_types_v2(kv_data, agent_eval, lang)
                 debug_info["normalized_kv_data_repr"] = repr(normalized_kv_data)
@@ -728,8 +728,7 @@ async def extract_kv_pipeline(input_text: str, output_format: str) -> Dict[str, 
 
                 return {
                     "success": True,
-                    "result": final_result, # Return formatted string or dict
-                    "debug": {k: str(v) for k, v in debug_info.items()}
+                    "result": final_result
                 }
             except Exception as dict_e:
                 debug_info["normalization_or_output_exception"] = str(dict_e)
@@ -784,7 +783,7 @@ async def extract_yaml(input_text: str) -> dict:
 async def extract_toml(input_text: str) -> dict:
     return await extract_kv_pipeline(input_text, "toml")
 
-# サーバー実行前の初期化処理（MCPホスト対応）
+# Server initialization and run (MCP host support)
 def initialize_and_run_server():
     try:
         args = parse_args()

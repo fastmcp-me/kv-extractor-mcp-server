@@ -2,7 +2,7 @@
 
 [![smithery badge](https://smithery.ai/badge/@KunihiroS/kv-extractor-mcp-server)](https://smithery.ai/server/@KunihiroS/kv-extractor-mcp-server)
 
-Version: 0.2.0
+Version: 0.3.0
 
 This MCP server extracts key-value pairs from arbitrary, noisy, or unstructured text using LLMs (GPT-4.1-mini) and pydantic-ai. 
 It ensures type safety and supports multiple output formats (JSON, YAML, TOML). The server is robust to any input and always attempts to structure data as much as possible, however, perfect extraction is **not guaranteed**.
@@ -10,6 +10,9 @@ It ensures type safety and supports multiple output formats (JSON, YAML, TOML). 
 ---
 
 ## Release Notes
+
+### v0.3.0
+- Update: Improve type evaluation prompt for robust correction.
 
 ### v0.2.0
 - Fix: Lang code for zh-cn / zh-tw.

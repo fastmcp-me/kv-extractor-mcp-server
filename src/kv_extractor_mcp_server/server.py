@@ -307,13 +307,17 @@ def build_type_annotation_prompt(kv_lines: str) -> str:
 
 def build_evaluation_prompt(typed_lines: str) -> str:
     return (
-        "Evaluate the type of each value in the following key-value-type list.\n"
-        "If the type is incorrect, provide a corrected list.\n"
-        "### Extraction and Type Annotation Results:\n"
-        f"{typed_lines}\n"
-        "Evaluation:\n"
-        "- Type: Valid/Invalid\n"
-        "- Correction: (if necessary, provide the corrected list)\n"
+        "You are an expert type validator. Review the following key-value-type list:\n"
+        f"{typed_lines}\n\n"
+        "Return the complete list with corrected types. Each line must follow the format 'key: value -> type' exactly as shown in the input.\n"
+        "If all types are already correct, simply return the original list unchanged.\n\n"
+        "Examples:\n"
+        "Input:\n"
+        "key: date, value: 2024/05/07 -> str\n"
+        "key: count, value: 5 -> str\n\n"
+        "Output (corrected):\n"
+        "key: date, value: 2024/05/07 -> str\n"
+        "key: count, value: 5 -> int\n"
     )
 
 # ------ Pydantic Models ------
@@ -626,21 +630,17 @@ async def extract_kv_pipeline(input_text: str, output_format: str) -> Dict[str, 
         eval_result = await agent_eval.run(eval_prompt)
         logging.debug(f"Evaluation result: {eval_result.data[:200]}... (truncated)")
 
-        # Simple judgment: If there is a corrected version, use it; otherwise, use the original
-        fixed_lines = None
-        for line in eval_result.data.splitlines():
-            if line.strip().startswith("修正版:"):
-                idx = line.index("修正版:")
-                fixed_lines = line[idx+4:].strip()
-                break
-
-        if fixed_lines and len(fixed_lines) > 5:
-            typed_lines_for_parse = fixed_lines
-        else:
+        # Use the evaluation result directly - it's either the corrected or unchanged list
+        # Add minimal format check as a safety measure
+        if not any("->" in line for line in eval_result.data.splitlines()):
+            # If result doesn't contain expected format, fall back to original
+            logging.warning("Evaluation result doesn't contain expected format, using original")
             if hasattr(typed_lines, "data"):
                 typed_lines_for_parse = typed_lines.data
             else:
                 typed_lines_for_parse = str(typed_lines)
+        else:
+            typed_lines_for_parse = eval_result.data
         logging.debug(f"Parsed lines for final step: {typed_lines_for_parse[:200]}... (truncated)")
 
         # Step 4: Formatting and type validation are fully delegated to pydantic-ai

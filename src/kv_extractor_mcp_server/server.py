@@ -102,7 +102,7 @@ def parse_args():
 # --- Main Processing Agent (lightweight model) ---
 agent_main = Agent('openai:gpt-4.1-mini')
 # Evaluation agent (high-precision model)
-agent_eval = Agent('openai:gpt-4.1-mini')
+agent_eval = Agent('openai:gpt-4.1')
 
 # --- Multilingual Support: spaCy NER Preprocessing (Step 0) ---
 LANG_MODEL_MAP = {
@@ -758,8 +758,7 @@ async def extract_kv_pipeline(input_text: str, output_format: str) -> Dict[str, 
 # ---------- MCP Tools ----------
 
 server = FastMCP(
-    'Flexible Key-Value Extraction MCP Server',
-    description="""Extracts key-value pairs from noisy or unstructured text using LLM+Pydantic-AI, and returns them in a type-safe way in the specified format (JSON/YAML/TOML). Robust to any input, always attempts to structure data as much as possible."""
+    'Flexible Key-Value Extraction MCP Server'
 )
 
 @server.tool(
